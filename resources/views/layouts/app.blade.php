@@ -58,7 +58,7 @@
 <body>
     <div id="app">
         <div class="bg-gray-100">
-            <div class="container flex items-center py-3">
+            <div class="container d-flex items-center py-3">
                 <svg class="h6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 121.9">
                     <path d="M48.8,2.5,31.5,5.1,0,61l31.5,55.8,17.3,2.6L15.2,61ZM93,2.5l17.3,2.6L141.8,61l-31.5,55.8L93,119.4,126.6,61Z" />
                     <path d="M48.8,2.5,70.9,0V61H15.2Z" fill="#f3f3f3" />
@@ -118,11 +118,6 @@
                         @endforeach
 
                         <li class="nav-item">
-                            <a class="nav-link text-secondary {{ Route::currentRouteName() == 'donate' ? 'active' : '' }}" href="https://asociatiamame.ro/crowdfunding/doneaza/" target="_blank" rel="noopener">
-                                {{ __('Donate') }}
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link {{ Route::currentRouteName() == 'request-services' ? 'active' : '' }}" href="{{ route('request-services') }}">
                                 {{ __('Request Help') }}
                             </a>
@@ -135,19 +130,27 @@
                         </li>
 
                         <li class="nav-item">
+                            <a class="nav-link {{ Route::currentRouteName() == 'donate' ? 'active' : '' }}" href="https://asociatiamame.ro/crowdfunding/doneaza/" target="_blank" rel="noopener">
+                                {{ __('Donate') }}
+                            </a>
+                        </li>
+
+                        {{-- 
+                        <li class="nav-item">
                             <a class="nav-link {{ in_array(Route::currentRouteName(), ['clinic-list', 'clinic-details']) ? 'active' : '' }}" href="{{ route('clinic-list') }}">
                                 {{ __('Clinics and Hospitals') }}
                             </a>
-                        </li>
+                        </li> 
+                        --}}
                     </ul>
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-md-4">
                         <!-- Authentication Links -->
                         @guest
-                        <li class="nav-item align-self-md-center">
-                            <a class="btn btn-primary btn-sm mr-sm-2" href="{{ route('login') }}">{{ __('Login host') }}</a>
-                        </li>
+                            <li class="nav-item align-self-md-center">
+                                <a class="btn btn-secondary mr-sm-2" href="{{ route('login') }}">{{ __('Login host') }}</a>
+                            </li>
                         @else
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -184,27 +187,26 @@
                         </li>
                         @endguest
 
+                        {{--
                         <li class="nav-item">
                             <a class="nav-link{{ Route::currentRouteName() == 'contact' ? ' active' : '' }}" href="{{ route('contact') }}">
                                 {{ __('Contact') }}
                             </a>
-                        </li>
+                        </li> 
+                        --}}
 
                         <!-- Language switcher -->
                         <li class="nav-item dropdown">
 
                             <a class="nav-link dropdown-toggle language-switch" href="#" id="navbar-default_dropdown_1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span>{{ strtoupper(str_replace('_', '-', app()->getLocale())) }}</span>
+                                <span>{{ config('translatable.locales_name')[app()->getLocale()] ?? strtoupper(app()->getLocale()) }}</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar-default_dropdown_1">
-                                @php
-                                $params = request()->route()->parameters();
-                                $ro = $en = $params;
-                                $ro['locale'] = 'ro';
-                                $en['locale'] = 'en';
-                                @endphp
-                                <a class="dropdown-item ro-language" href="{{ route(Route::currentRouteName(), \App\Helpers\RouteHelper::translateCurrentSlug($ro)) }}">RO</a>
-                                <a class="dropdown-item en-language" href="{{ route(Route::currentRouteName(), \App\Helpers\RouteHelper::translateCurrentSlug($en)) }}">EN</a>
+                                @foreach(config('translatable.locales') as $locale)
+                                    <a class="dropdown-item {{ $locale }}-language" href="{{ route(Route::currentRouteName(), \App\Helpers\RouteHelper::translateCurrentSlug([ 'locale' => $locale, 'slug' => Route::getCurrentRoute()->parameter("slug")])) }}">
+                                        {{ config('translatable.locales_name')[$locale] ?? strtoupper($locale) }}
+                                    </a>
+                                @endforeach
                             </div>
                         </li>
                     </ul>
